@@ -10,7 +10,7 @@
          ongoing notification when unavailable/denied. -->
     <uses-permission android:name="android.permission.POST_PROMOTED_NOTIFICATIONS" />
 
-    <!-- Optional floating island. Never requested automatically -- see
+    <!-- Optional floating island. Never requested automatically; see
          core.permissions.OverlayPermissionManager for the explicit consent flow. -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
@@ -80,7 +80,7 @@
         </service>
 
         <!-- Opt-in media session observer. FlowIsland never requests this
-             automatically -- the system's own "Notification access" screen is the
+             automatically; the system's own "Notification access" screen is the
              single grant point, and the user only lands there after tapping
              "Enable media tracking" in Settings and reading the in-app disclosure. -->
         <service
