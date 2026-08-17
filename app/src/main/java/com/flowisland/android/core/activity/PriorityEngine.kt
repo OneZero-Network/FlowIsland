@@ -12,8 +12,8 @@ object PriorityEngine {
 
     private val tierOrder = listOf(
         ActivityPriorityTier.URGENT,
-        ActivityPriorityTier.PINNED,
         ActivityPriorityTier.NEARING_COMPLETION,
+        ActivityPriorityTier.PINNED,
         ActivityPriorityTier.RECENTLY_INTERACTED,
         ActivityPriorityTier.BACKGROUND,
     )
