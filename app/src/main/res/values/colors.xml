@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Warm off-white light background / deep charcoal dark background, per spec.
+         Full Material3 color scheme (including the restrained indigo/violet accent)
+         lives in core.ui.theme.Color.kt; these two are needed pre-Compose. -->
+    <color name="flowisland_background_light">#FBF9F6</color>
+    <color name="flowisland_background_dark">#141317</color>
+</resources>

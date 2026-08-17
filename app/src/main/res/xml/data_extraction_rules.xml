@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  allowBackup is false in the manifest, so this file is currently inert, but it is
+  kept explicit (and empty of any include rules) as a deliberate privacy statement:
+  FlowIsland does not participate in Android's cloud/device backup transport.
+-->
+<data-extraction-rules>
+    <cloud-backup disableIfNoEncryptionCapability="true" />
+    <device-transfer />
+</data-extraction-rules>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_tagline">सर्व काही सक्रिय. एका दृष्टीक्षेपात.</string>
+
+    <string name="onboarding_1_title">सर्व काही सक्रिय.\nएका दृष्टीक्षेपात.</string>
+    <string name="onboarding_1_body">FlowIsland तुमच्या प्रत्येक सुरू असलेल्या क्रियेला एका कॉम्पॅक्ट जागी दाखवते.</string>
+    <string name="onboarding_2_title">टायमर, संगीत, प्रवास, वर्कआउट आणि बरेच काही</string>
+    <string name="onboarding_2_body">एकदा सुरू करा, नंतर वारंवार अ‍ॅप न उघडता स्थिती तपासा.</string>
+    <string name="onboarding_3_title">रचनेनुसारच खाजगी</string>
+    <string name="onboarding_3_body">खाते नाही. क्लाउड सिंक नाही. मुख्य वैशिष्ट्ये पूर्णपणे ऑफलाइन काम करतात.</string>
+    <string name="onboarding_get_started">सुरू करा</string>
+    <string name="onboarding_skip">वगळा</string>
+
+    <string name="home_active_now">सध्या सक्रिय</string>
+    <string name="home_nothing_active_title">सर्व काही शांत आहे.</string>
+    <string name="home_nothing_active_body">टायमर, वर्कआउट, अभ्यास सत्र, प्रवास किंवा इतर क्रिया सुरू करा.</string>
+    <string name="home_start_activity">क्रिया सुरू करा</string>
+    <string name="home_quick_start">जलद सुरुवात</string>
+    <string name="home_history">इतिहास</string>
+
+    <string name="type_timer">टायमर</string>
+    <string name="type_pomodoro">पोमोडोरो</string>
+    <string name="type_stopwatch">स्टॉपवॉच</string>
+    <string name="type_media">मीडिया</string>
+    <string name="type_study">अभ्यास</string>
+    <string name="type_cooking">स्वयंपाक</string>
+    <string name="type_fitness">वर्कआउट</string>
+    <string name="type_trip">प्रवास</string>
+    <string name="type_expense">खर्च</string>
+    <string name="type_download">एक्सपोर्ट</string>
+    <string name="type_ai">लोकल टास्क</string>
+    <string name="type_reminder">स्मरणपत्र</string>
+    <string name="type_delivery">डिलिव्हरी</string>
+    <string name="type_flight">फ्लाइट</string>
+
+    <string name="action_pause">थांबवा</string>
+    <string name="action_resume">पुन्हा सुरू करा</string>
+    <string name="action_finish">पूर्ण करा</string>
+    <string name="action_cancel">रद्द करा</string>
+    <string name="action_reset">रीसेट</string>
+    <string name="action_pin">पिन करा</string>
+    <string name="action_unpin">अनपिन करा</string>
+    <string name="action_hide">लपवा</string>
+    <string name="action_dismiss">काढून टाका</string>
+    <string name="action_open">उघडा</string>
+    <string name="action_stop">थांबवा</string>
+    <string name="action_start">सुरू करा</string>
+    <string name="action_done">पूर्ण</string>
+    <string name="action_snooze">स्नूझ</string>
+
+    <string name="settings_title">सेटिंग्ज</string>
+    <string name="settings_section_flowisland">FlowIsland</string>
+    <string name="settings_section_activities">क्रिया</string>
+    <string name="settings_section_notifications">सूचना</string>
+    <string name="settings_section_appearance">देखावा</string>
+    <string name="settings_section_privacy">गोपनीयता</string>
+    <string name="settings_section_about">माहिती</string>
+    <string name="settings_delete_data">सर्व लोकल डेटा हटवा</string>
+    <string name="settings_privacy_policy">गोपनीयता धोरण</string>
+</resources>

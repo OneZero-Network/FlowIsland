@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FlowIsland</string>
+    <string name="app_tagline">Everything active. At a glance.</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_1_title">Everything active.\nAt a glance.</string>
+    <string name="onboarding_1_body">FlowIsland shows every ongoing activity you start in one compact, glanceable place.</string>
+    <string name="onboarding_2_title">Timers, music, trips, workouts and more</string>
+    <string name="onboarding_2_body">Start something once, then check on it without repeatedly reopening the app.</string>
+    <string name="onboarding_3_title">Private by design</string>
+    <string name="onboarding_3_body">No account. No cloud sync. Core features work fully offline, including in airplane mode.</string>
+    <string name="onboarding_get_started">Get Started</string>
+    <string name="onboarding_skip">Skip</string>
+
+    <!-- Home -->
+    <string name="home_active_now">ACTIVE NOW</string>
+    <string name="home_nothing_active_title">You\'re all clear.</string>
+    <string name="home_nothing_active_body">Start a timer, workout, study session, trip or another activity.</string>
+    <string name="home_start_activity">Start activity</string>
+    <string name="home_quick_start">Quick start</string>
+    <string name="home_history">History</string>
+
+    <!-- Activity type names -->
+    <string name="type_timer">Timer</string>
+    <string name="type_pomodoro">Pomodoro</string>
+    <string name="type_stopwatch">Stopwatch</string>
+    <string name="type_media">Media</string>
+    <string name="type_study">Study</string>
+    <string name="type_cooking">Cooking</string>
+    <string name="type_fitness">Workout</string>
+    <string name="type_trip">Trip</string>
+    <string name="type_expense">Expense</string>
+    <string name="type_download">Export</string>
+    <string name="type_ai">Local Task</string>
+    <string name="type_reminder">Reminder</string>
+    <string name="type_delivery">Delivery</string>
+    <string name="type_flight">Flight</string>
+
+    <!-- Common activity actions -->
+    <string name="action_pause">Pause</string>
+    <string name="action_resume">Resume</string>
+    <string name="action_finish">Finish</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_reset">Reset</string>
+    <string name="action_add_1_min">+1 MIN</string>
+    <string name="action_add_5_min">+5 MIN</string>
+    <string name="action_pin">Pin</string>
+    <string name="action_unpin">Unpin</string>
+    <string name="action_hide">Hide</string>
+    <string name="action_dismiss">Dismiss</string>
+    <string name="action_open">Open</string>
+    <string name="action_stop">Stop</string>
+    <string name="action_lap">Lap</string>
+    <string name="action_start">Start</string>
+    <string name="action_done">Done</string>
+    <string name="action_snooze">Snooze</string>
+    <string name="action_view_result">View result</string>
+    <string name="action_view_details">View details</string>
+    <string name="completion_label">Completed</string>
+
+    <!-- Timer -->
+    <string name="timer_new">New timer</string>
+    <string name="timer_label_hint">Label (optional)</string>
+    <string name="timer_duration">Duration</string>
+
+    <!-- Pomodoro -->
+    <string name="pomodoro_focus">Focus</string>
+    <string name="pomodoro_short_break">Break</string>
+    <string name="pomodoro_long_break">Long break</string>
+    <string name="pomodoro_preset_25_5">25 / 5</string>
+    <string name="pomodoro_preset_50_10">50 / 10</string>
+    <string name="pomodoro_preset_custom">Custom</string>
+    <string name="pomodoro_auto_start_break">Auto-start break</string>
+    <string name="pomodoro_auto_start_focus">Auto-start next focus</string>
+    <string name="pomodoro_long_break_interval">Long break interval</string>
+    <string name="pomodoro_today_sessions">Sessions today</string>
+    <string name="pomodoro_today_focus_time">Focus time today</string>
+
+    <!-- Stopwatch -->
+    <string name="stopwatch_title">Stopwatch</string>
+
+    <!-- Media -->
+    <string name="media_enable_title">Media tracking</string>
+    <string name="media_enable_body">FlowIsland can show whatever is currently playing on your device, with play/pause/skip controls, in your island and notifications. This needs the system\'s \"Notification access\" permission, since that\'s the only way Android lets an app see what\'s playing across other apps. FlowIsland will not read notification contents for anything else.</string>
+    <string name="media_enable_cta">Enable media tracking</string>
+    <string name="media_not_now">Not now</string>
+    <string name="media_no_session">Nothing is playing right now.</string>
+
+    <!-- Study -->
+    <string name="study_subject_hint">Subject</string>
+    <string name="study_new_session">New study session</string>
+    <string name="study_remaining">remaining</string>
+    <string name="study_focus_mode">Focus Mode</string>
+    <string name="study_stats_today">Today</string>
+    <string name="study_stats_week">This week</string>
+    <string name="study_stats_month">This month</string>
+
+    <!-- Cooking -->
+    <string name="cooking_new_recipe">New recipe</string>
+    <string name="cooking_step_of">Step %1$d of %2$d</string>
+    <string name="cooking_add_step">Add step</string>
+    <string name="cooking_step_name_hint">Step name</string>
+    <string name="cooking_step_duration_hint">Duration (minutes)</string>
+    <string name="cooking_auto_advance">Auto-advance to next step</string>
+    <string name="cooking_skip_step">Skip step</string>
+
+    <!-- Fitness -->
+    <string name="fitness_new_workout">New workout</string>
+    <string name="fitness_walking">Walking</string>
+    <string name="fitness_running">Running</string>
+    <string name="fitness_cycling">Cycling</string>
+    <string name="fitness_custom">Custom</string>
+    <string name="fitness_pace">/km</string>
+    <string name="fitness_location_rationale_title">Location for workouts</string>
+    <string name="fitness_location_rationale_body">FlowIsland only reads your location while a workout you started is running, to calculate distance and pace. It stops the moment you finish or cancel.</string>
+
+    <!-- Trip -->
+    <string name="trip_new">New trip</string>
+    <string name="trip_destination_hint">Destination label (optional)</string>
+    <string name="trip_open_navigation">Open navigation</string>
+    <string name="trip_average_speed">Average</string>
+    <string name="trip_location_rationale_title">Location for trips</string>
+    <string name="trip_location_rationale_body">FlowIsland only reads your location while a trip you started is running, to calculate distance, speed and elapsed time. It stops the moment you end the trip.</string>
+
+    <!-- Expense -->
+    <string name="expense_new_trip">New expense trip</string>
+    <string name="expense_add">Add Expense</string>
+    <string name="expense_amount_hint">Amount</string>
+    <string name="expense_category_hint">Category</string>
+    <string name="expense_note_hint">Note (optional)</string>
+    <string name="expense_total">Total</string>
+    <string name="expense_category_food">Food</string>
+    <string name="expense_category_transport">Transport</string>
+    <string name="expense_category_hotel">Hotel</string>
+    <string name="expense_category_shopping">Shopping</string>
+    <string name="expense_category_entertainment">Entertainment</string>
+    <string name="expense_category_other">Other</string>
+
+    <!-- Download / Export -->
+    <string name="download_export_history">Export activity history (CSV)</string>
+    <string name="download_export_expenses">Export expenses (CSV)</string>
+    <string name="download_exporting">Exporting</string>
+    <string name="download_complete">Export complete</string>
+
+    <!-- AI / Local task -->
+    <string name="ai_optimize_database">Optimize local database</string>
+    <string name="ai_processing">Processing</string>
+    <string name="ai_step_compacting">Compacting storage</string>
+    <string name="ai_step_reindexing">Rebuilding indexes</string>
+    <string name="ai_complete">Local task complete</string>
+
+    <!-- Reminders -->
+    <string name="reminder_new">New reminder</string>
+    <string name="reminder_title_hint">What should FlowIsland remind you of?</string>
+    <string name="reminder_time_hint">Time</string>
+    <string name="reminder_in_minutes">in %1$d min</string>
+    <string name="reminder_exact_alarm_rationale_title">Exact reminders</string>
+    <string name="reminder_exact_alarm_rationale_body">To ring at exactly the right time, custom-interval reminders need the \"Alarms &amp; reminders\" permission. Simple one-time reminders don\'t need it.</string>
+
+    <!-- Delivery -->
+    <string name="delivery_new">New delivery</string>
+    <string name="delivery_name_hint">Item / order name</string>
+    <string name="delivery_order_number_hint">Order number (optional)</string>
+    <string name="delivery_eta_hint">Expected time</string>
+    <string name="delivery_status_ordered">Ordered</string>
+    <string name="delivery_status_shipped">Shipped</string>
+    <string name="delivery_status_out_for_delivery">Out for delivery</string>
+    <string name="delivery_status_delivered">Delivered</string>
+    <string name="delivery_arriving_today">Arriving today</string>
+    <string name="delivery_update_status">Update status</string>
+
+    <!-- Flight -->
+    <string name="flight_new">New flight</string>
+    <string name="flight_number_hint">Flight number</string>
+    <string name="flight_airline_hint">Airline</string>
+    <string name="flight_from_hint">From</string>
+    <string name="flight_to_hint">To</string>
+    <string name="flight_boarding_time_hint">Boarding time</string>
+    <string name="flight_departure_time_hint">Departure time</string>
+    <string name="flight_status_upcoming">Upcoming</string>
+    <string name="flight_status_checkin">Check-in</string>
+    <string name="flight_status_boarding">Boarding</string>
+    <string name="flight_status_departing">Departing</string>
+    <string name="flight_status_completed">Completed</string>
+    <string name="flight_boarding_in">Boarding %1$s</string>
+    <string name="flight_manual_disclosure">Entered manually. FlowIsland does not track live flight status.</string>
+
+    <!-- Activity switcher -->
+    <string name="switcher_title">Active activities</string>
+    <string name="switcher_pinned_only">Pinned only</string>
+    <string name="switcher_all">All activities</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_section_flowisland">FlowIsland</string>
+    <string name="settings_enable_island">Enable floating island</string>
+    <string name="settings_island_size">Island size</string>
+    <string name="settings_island_size_small">Small</string>
+    <string name="settings_island_size_default">Default</string>
+    <string name="settings_island_size_large">Large</string>
+    <string name="settings_island_animation">Animation intensity</string>
+    <string name="settings_animation_subtle">Subtle</string>
+    <string name="settings_animation_standard">Standard</string>
+    <string name="settings_animation_reduced">Reduced motion</string>
+    <string name="settings_island_display">Display</string>
+    <string name="settings_display_all">All activities</string>
+    <string name="settings_display_pinned">Pinned only</string>
+    <string name="settings_auto_collapse">Auto-collapse</string>
+    <string name="settings_auto_collapse_5s">5 sec</string>
+    <string name="settings_auto_collapse_10s">10 sec</string>
+    <string name="settings_auto_collapse_30s">30 sec</string>
+    <string name="settings_auto_collapse_never">Never</string>
+    <string name="settings_section_activities">Activities</string>
+    <string name="settings_section_notifications">Notifications</string>
+    <string name="settings_section_appearance">Appearance</string>
+    <string name="settings_theme_system">System</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_section_privacy">Privacy</string>
+    <string name="settings_permissions">Permissions</string>
+    <string name="settings_delete_data">Delete all local data</string>
+    <string name="settings_delete_data_confirm_title">Delete all local data?</string>
+    <string name="settings_delete_data_confirm_body">This permanently removes your FlowIsland activities, history, timers, trips and expenses.</string>
+    <string name="settings_privacy_policy">Privacy policy</string>
+    <string name="settings_section_about">About</string>
+    <string name="settings_version">Version</string>
+    <string name="settings_open_source_licenses">Open source licenses</string>
+    <string name="settings_support">Support</string>
+
+    <!-- Overlay permission flow -->
+    <string name="overlay_permission_title">Show FlowIsland above other apps?</string>
+    <string name="overlay_permission_body">FlowIsland can optionally show your active activity as a small floating pill above other apps.</string>
+    <string name="overlay_permission_enable">Enable FlowIsland</string>
+    <string name="overlay_permission_not_now">Not now</string>
+    <string name="overlay_unavailable_body">FlowIsland\'s floating mode isn\'t available on this device right now.</string>
+    <string name="overlay_use_notifications">Use notifications</string>
+
+    <!-- Error / empty states -->
+    <string name="error_location_denied">Location access is required for live trip and workout tracking.</string>
+    <string name="error_open_settings">Open settings</string>
+    <string name="error_notifications_denied">Notifications are disabled.</string>
+    <string name="error_enable_notifications">Enable notifications</string>
+
+    <!-- Notification channels -->
+    <string name="channel_active_activities_name">Active activities</string>
+    <string name="channel_active_activities_desc">Ongoing timers, sessions, trips and other running activities</string>
+    <string name="channel_timers_name">Timers</string>
+    <string name="channel_timers_desc">Timer, Pomodoro and Stopwatch updates</string>
+    <string name="channel_reminders_name">Reminders</string>
+    <string name="channel_reminders_desc">Reminders you\'ve scheduled</string>
+    <string name="channel_fitness_name">Fitness</string>
+    <string name="channel_fitness_desc">Workout tracking</string>
+    <string name="channel_trips_name">Trips</string>
+    <string name="channel_trips_desc">Trip tracking</string>
+
+    <!-- Widget -->
+    <string name="widget_description">Shows your current FlowIsland activity on the home screen</string>
+    <string name="widget_preview_text">FlowIsland • Focus • 24:32</string>
+    <string name="widget_nothing_active">Nothing active</string>
+
+    <!-- Privacy policy -->
+    <string name="privacy_policy_title">Privacy policy</string>
+
+    <!-- Content descriptions (accessibility) -->
+    <string name="cd_activity_icon">Activity icon</string>
+    <string name="cd_expand_island">Expand FlowIsland</string>
+    <string name="cd_collapse_island">Collapse FlowIsland</string>
+    <string name="cd_close_dialog">Close</string>
+</resources>

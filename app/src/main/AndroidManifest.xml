@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Core notification permission (Android 13+). Requested at first activity start. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Android 16 promoted / Live Update notifications. Guarded at runtime via
+         NotificationManager#canPostPromotedNotifications(); falls back to a normal
+         ongoing notification when unavailable/denied. -->
+    <uses-permission android:name="android.permission.POST_PROMOTED_NOTIFICATIONS" />
+
+    <!-- Optional floating island. Never requested automatically -- see
+         core.permissions.OverlayPermissionManager for the explicit consent flow. -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+    <!-- Foreground service: only used while the floating overlay is actively shown,
+         which is a genuinely ongoing, user-visible, user-initiated surface. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+
+    <!-- Location: requested at runtime ONLY when the user explicitly starts a
+         Fitness or Trip activity. Never requested at app launch. -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!-- Used solely to reschedule the user's own pending Reminder alarms after a
+         reboot (setAlarmClock() entries do not survive reboot). No service is
+         auto-started; only AlarmManager entries are re-armed. -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!-- Declared so the app can check exact-alarm availability for Reminders; we
+         primarily use setAlarmClock() (no special permission required) and only
+         consult this for the rare custom-interval case. -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+
+    <!-- DEVIATION FROM DEFAULT PERMISSION LIST (documented in BUILD_REPORT.md):
+         Genuinely observing "is any media session currently active" system-wide is
+         only possible via NotificationListenerService + MediaSessionManager on
+         stock Android; there is no other public API. This is opt-in only, off by
+         default, explained in-app before the system settings screen opens, and the
+         Media activity type is simply unavailable if the user declines. -->
+    <uses-permission android:name="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+        tools:ignore="ProtectedPermissions" />
+
+    <application
+        android:name=".FlowIslandApp"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.FlowIsland"
+        android:enableOnBackInvokedCallback="true"
+        android:supportsRtl="true"
+        android:localeConfig="@xml/locales_config">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.FlowIsland.Splash"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Floating island overlay. Never exported; only FlowIsland starts it, and
+             only after the user explicitly grants SYSTEM_ALERT_WINDOW. -->
+        <service
+            android:name=".core.overlay.FlowIslandOverlayService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Shows the user's currently running FlowIsland activity as a small floating control while other apps are in use, at the user's explicit request." />
+        </service>
+
+        <!-- Opt-in media session observer. FlowIsland never requests this
+             automatically -- the system's own "Notification access" screen is the
+             single grant point, and the user only lands there after tapping
+             "Enable media tracking" in Settings and reading the in-app disclosure. -->
+        <service
+            android:name=".feature.media.MediaSessionListenerService"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
+        <receiver
+            android:name=".core.notification.ActivityActionReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name=".core.reminder.ReminderAlarmReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name=".core.reminder.BootRescheduleReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".feature.flight.FlightStatusReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name=".widget.FlowIslandWidgetReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/flowisland_widget_info" />
+        </receiver>
+
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge" />
+
+    </application>
+</manifest>
