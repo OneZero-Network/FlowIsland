@@ -72,7 +72,7 @@ data class ActivityUiState(
     fun priorityTier(now: Long = System.currentTimeMillis()): ActivityPriorityTier = when {
         expirationTime != null && expirationTime <= now && state.isOngoing -> ActivityPriorityTier.URGENT
         state == ActivityState.ACTIVE && timer != null && !timer.countUp &&
-            timer.remainingMillis() in 0..30_000 -> ActivityPriorityTier.NEARING_COMPLETION
+            timer.remainingMillis(now) in 0..30_000 -> ActivityPriorityTier.NEARING_COMPLETION
         pinned -> ActivityPriorityTier.PINNED
         now - lastInteractedAt < 15_000 -> ActivityPriorityTier.RECENTLY_INTERACTED
         else -> ActivityPriorityTier.BACKGROUND
