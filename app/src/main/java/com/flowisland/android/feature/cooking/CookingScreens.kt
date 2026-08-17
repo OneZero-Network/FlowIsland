@@ -44,7 +44,6 @@ import com.flowisland.android.core.ui.components.PrimaryButton
 import com.flowisland.android.core.ui.components.ScreenPadding
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -90,7 +89,7 @@ class CookingStepAdvancer @Inject constructor(
 
     fun start() {
         scope.launch {
-            activityEngine.activities.distinctUntilChanged().collect { list ->
+            activityEngine.activities.collect { list ->
                 list.filter { it.type == ActivityType.COOKING && it.state == ActivityState.ACTIVE }
                     .forEach { maybeAdvance(it) }
             }

@@ -5,9 +5,7 @@ import android.content.Context
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import android.os.Build
 import android.os.Looper
-import androidx.core.os.HandlerCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -52,14 +50,7 @@ class LocationTracker @Inject constructor(@ApplicationContext private val contex
             )
         }
 
-        val looper = Looper.getMainLooper()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            locationManager.requestLocationUpdates(
-                provider, minIntervalMillis, minDistanceMeters, HandlerCompat.createAsync(looper), listener,
-            )
-        } else {
-            locationManager.requestLocationUpdates(provider, minIntervalMillis, minDistanceMeters, listener, looper)
-        }
+        locationManager.requestLocationUpdates(provider, minIntervalMillis, minDistanceMeters, listener, Looper.getMainLooper())
 
         awaitClose { locationManager.removeUpdates(listener) }
     }

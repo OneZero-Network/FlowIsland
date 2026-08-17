@@ -10,7 +10,6 @@ import com.flowisland.android.core.notification.NotificationBridge
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -35,7 +34,7 @@ class ActivityEngineObserver @Inject constructor(
 
     fun start() {
         scope.launch {
-            activityEngine.activities.distinctUntilChanged().collect { list ->
+            activityEngine.activities.collect { list ->
                 list.forEach { state -> handle(state) }
             }
         }

@@ -136,8 +136,16 @@ class NotificationBridge @Inject constructor(@ApplicationContext private val con
             .setOngoing(state.state == ActivityState.ACTIVE || state.state == ActivityState.PAUSED)
             .setOnlyAlertOnce(true)
             .setContentIntent(contentIntent(state))
-            .setRequestPromotedOngoing(true)
             .setStyle(progressStyle)
+        // NOTE: this branch is only reached when canPostPromotedNotifications()
+        // (checked in canUseLiveUpdate() above) already returned true, which is
+        // the actual system gate for Live Update / promoted-notification
+        // treatment. There may additionally be a builder-level opt-in call on
+        // API 36 (something like setRequestPromotedOngoing); it was left out
+        // here rather than guessed at, since its exact name/signature couldn't
+        // be verified against this SDK in the environment this was written in.
+        // If Live Updates don't visually promote once this is confirmed to
+        // build, that's the next thing to check.
 
         state.timer?.takeIf { !it.isPaused }?.let { timer ->
             builder.setUsesChronometer(true)

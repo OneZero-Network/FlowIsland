@@ -10,7 +10,6 @@ import com.flowisland.android.core.di.ApplicationScope
 import com.flowisland.android.core.di.IoDispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -27,7 +26,7 @@ class StudySessionRecorder @Inject constructor(
 
     fun start() {
         scope.launch {
-            activityEngine.activities.distinctUntilChanged().collect { list ->
+            activityEngine.activities.collect { list ->
                 list.filter { it.type == ActivityType.STUDY && it.state.isTerminal }
                     .forEach { record(it.id.value, completed = it.state == ActivityState.COMPLETED) }
             }

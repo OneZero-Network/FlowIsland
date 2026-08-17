@@ -9,7 +9,6 @@ import com.flowisland.android.core.activity.model.ActivityUiState
 import com.flowisland.android.core.di.ApplicationScope
 import com.flowisland.android.core.time.TimerSpec
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -23,7 +22,7 @@ class PomodoroCycleManager @Inject constructor(
 
     fun start() {
         scope.launch {
-            activityEngine.activities.distinctUntilChanged().collect { list ->
+            activityEngine.activities.collect { list ->
                 list.filter { it.type == ActivityType.POMODORO && it.state == ActivityState.ACTIVE }
                     .forEach { pomodoro -> maybeAdvance(pomodoro) }
             }
