@@ -1,0 +1,106 @@
+name: Build FlowIsland
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build, test, and package APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: "platforms;android-36 build-tools;35.0.0 platform-tools"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.10.2'
+          cache-read-only: false
+
+      - name: Decode release keystore (optional)
+        env:
+          FLOWISLAND_KEYSTORE_BASE64: ${{ secrets.FLOWISLAND_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$FLOWISLAND_KEYSTORE_BASE64" ]; then
+            echo "$FLOWISLAND_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.keystore"
+            echo "FLOWISLAND_KEYSTORE_PATH=$RUNNER_TEMP/release.keystore" >> "$GITHUB_ENV"
+            echo "Release keystore decoded; release build will be properly signed."
+          else
+            echo "No FLOWISLAND_KEYSTORE_BASE64 secret set; release build will be debug-signed."
+          fi
+
+      - name: Run unit tests
+        run: gradle testDebugUnitTest --stacktrace
+
+      - name: Lint
+        run: gradle lintDebug --stacktrace
+        continue-on-error: true
+
+      - name: Build debug APK
+        run: gradle assembleDebug --stacktrace
+
+      - name: Build release APK
+        run: gradle assembleRelease --stacktrace
+        env:
+          FLOWISLAND_KEYSTORE_PASSWORD: ${{ secrets.FLOWISLAND_KEYSTORE_PASSWORD }}
+          FLOWISLAND_KEY_ALIAS: ${{ secrets.FLOWISLAND_KEY_ALIAS }}
+          FLOWISLAND_KEY_PASSWORD: ${{ secrets.FLOWISLAND_KEY_PASSWORD }}
+
+      - name: Build release AAB (Play Store upload format)
+        run: gradle bundleRelease --stacktrace
+        env:
+          FLOWISLAND_KEYSTORE_PASSWORD: ${{ secrets.FLOWISLAND_KEYSTORE_PASSWORD }}
+          FLOWISLAND_KEY_ALIAS: ${{ secrets.FLOWISLAND_KEY_ALIAS }}
+          FLOWISLAND_KEY_PASSWORD: ${{ secrets.FLOWISLAND_KEY_PASSWORD }}
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: flowisland-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+
+      - name: Upload release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: flowisland-release-apk
+          path: app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
+
+      - name: Upload release AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: flowisland-release-aab
+          path: app/build/outputs/bundle/release/*.aab
+          if-no-files-found: error
+
+      - name: Upload unit test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-results
+          path: app/build/test-results/testDebugUnitTest/*.xml
+          if-no-files-found: ignore
+
+      - name: Upload lint report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-report
+          path: app/build/reports/lint-results-debug.html
+          if-no-files-found: ignore
