@@ -1,5 +1,6 @@
 package com.flowisland.android.core.activity.model
 
+import android.os.SystemClock
 import com.flowisland.android.core.time.TimerSpec
 import java.util.UUID
 
@@ -69,12 +70,15 @@ data class ActivityUiState(
     /** Optional wall-clock deadline for non-timer activities (flight boarding, reminder). */
     val expirationTime: Long? = null,
 ) {
-    fun priorityTier(now: Long = System.currentTimeMillis()): ActivityPriorityTier = when {
-        expirationTime != null && expirationTime <= now && state.isOngoing -> ActivityPriorityTier.URGENT
+    fun priorityTier(
+        nowWallClockMillis: Long = System.currentTimeMillis(),
+        nowElapsedRealtimeMillis: Long = SystemClock.elapsedRealtime(),
+    ): ActivityPriorityTier = when {
+        expirationTime != null && expirationTime <= nowWallClockMillis && state.isOngoing -> ActivityPriorityTier.URGENT
         state == ActivityState.ACTIVE && timer != null && !timer.countUp &&
-            timer.remainingMillis(now) in 0..30_000 -> ActivityPriorityTier.NEARING_COMPLETION
+            timer.remainingMillis(nowElapsedRealtimeMillis) in 0..30_000 -> ActivityPriorityTier.NEARING_COMPLETION
         pinned -> ActivityPriorityTier.PINNED
-        now - lastInteractedAt < 15_000 -> ActivityPriorityTier.RECENTLY_INTERACTED
+        nowWallClockMillis - lastInteractedAt < 15_000 -> ActivityPriorityTier.RECENTLY_INTERACTED
         else -> ActivityPriorityTier.BACKGROUND
     }
 }

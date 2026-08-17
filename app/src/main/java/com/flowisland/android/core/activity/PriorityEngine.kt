@@ -2,6 +2,7 @@ package com.flowisland.android.core.activity
 
 import com.flowisland.android.core.activity.model.ActivityPriorityTier
 import com.flowisland.android.core.activity.model.ActivityUiState
+import android.os.SystemClock
 
 /**
  * Pure sorting logic, deliberately separate from [ActivityEngine] so it can be
@@ -18,10 +19,26 @@ object PriorityEngine {
         ActivityPriorityTier.BACKGROUND,
     )
 
-    fun sort(activities: List<ActivityUiState>, now: Long = System.currentTimeMillis()): List<ActivityUiState> {
+    /**
+     * Sort activities using the correct clock for each kind of time data.
+     * Wall-clock time is used for absolute deadlines; elapsed realtime is used
+     * for monotonic timers. Keeping the two domains separate prevents a wall-clock
+     * epoch timestamp from being accidentally passed into TimerSpec.remainingMillis().
+     */
+    fun sort(
+        activities: List<ActivityUiState>,
+        nowWallClockMillis: Long = System.currentTimeMillis(),
+        nowElapsedRealtimeMillis: Long = SystemClock.elapsedRealtime(),
+    ): List<ActivityUiState> {
         return activities.sortedWith(
-            compareBy<ActivityUiState> { tierOrder.indexOf(it.priorityTier(now)) }
-                .thenByDescending { it.lastInteractedAt }
+            compareBy<ActivityUiState> {
+                tierOrder.indexOf(
+                    it.priorityTier(
+                        nowWallClockMillis = nowWallClockMillis,
+                        nowElapsedRealtimeMillis = nowElapsedRealtimeMillis,
+                    )
+                )
+            }.thenByDescending { it.lastInteractedAt }
         )
     }
 
