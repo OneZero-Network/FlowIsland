@@ -8,6 +8,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.flowisland.android.MainActivity
 import com.flowisland.android.R
 import com.flowisland.android.core.activity.ActivityEngine
+import com.flowisland.android.core.activity.ActivityExpiryScheduler
 import com.flowisland.android.core.activity.model.ActivityId
 import com.flowisland.android.core.activity.model.ActivityState
 import com.flowisland.android.core.database.ReminderDao
@@ -74,8 +75,8 @@ class ReminderAlarmReceiver : BroadcastReceiver() {
                     .setCategory(NotificationCompat.CATEGORY_REMINDER)
                     .setAutoCancel(true)
                     .setContentIntent(openIntent)
-                    .addAction(0, context.getString(R.string.action_done), doneIntent)
-                    .addAction(0, context.getString(R.string.action_snooze), snoozeIntent)
+                    .addAction(R.drawable.ic_notification_flowisland, context.getString(R.string.action_done), doneIntent)
+                    .addAction(R.drawable.ic_notification_flowisland, context.getString(R.string.action_snooze), snoozeIntent)
                     .build()
 
                 NotificationManagerCompat.from(context).notify(reminderId.hashCode(), notification)
@@ -90,6 +91,7 @@ class ReminderAlarmReceiver : BroadcastReceiver() {
 class BootRescheduleReceiver : BroadcastReceiver() {
 
     @Inject lateinit var reminderScheduler: ReminderScheduler
+    @Inject lateinit var activityExpiryScheduler: ActivityExpiryScheduler
 
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action != Intent.ACTION_BOOT_COMPLETED) return
@@ -97,6 +99,7 @@ class BootRescheduleReceiver : BroadcastReceiver() {
         CoroutineScope(Dispatchers.Default).launch {
             try {
                 reminderScheduler.rescheduleAllPending()
+                activityExpiryScheduler.rescheduleAllPersisted()
             } finally {
                 pendingResult.finish()
             }

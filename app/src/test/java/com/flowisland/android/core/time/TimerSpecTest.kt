@@ -56,6 +56,45 @@ class TimerSpecTest {
         assertEquals(120_000L, spec.remainingMillis(nowElapsedRealtime = 0L))
     }
 
+
+    @Test
+    fun `countdown recovers across a simulated device reboot using wall clock anchor`() {
+        val spec = TimerSpec(
+            durationMillis = 60_000L,
+            startedAtElapsedRealtime = 900_000L,
+            startedAtWallClockMillis = 1_000_000L,
+        )
+
+        // Before reboot: 20 seconds elapsed. After reboot, elapsedRealtime is
+        // smaller than the old anchor, so the implementation must switch to
+        // the persisted wall-clock domain.
+        assertEquals(40_000L, spec.remainingMillis(920_000L, 1_020_000L))
+        assertEquals(10_000L, spec.remainingMillis(20_000L, 1_050_000L))
+    }
+
+    @Test
+    fun `paused countdown remains paused across a simulated reboot`() {
+        val spec = TimerSpec(
+            durationMillis = 60_000L,
+            startedAtElapsedRealtime = 900_000L,
+            startedAtWallClockMillis = 1_000_000L,
+        ).pause(920_000L, 1_020_000L)
+
+        assertEquals(40_000L, spec.remainingMillis(20_000L, 1_500_000L))
+    }
+
+    @Test
+    fun `resume after reboot preserves pre-pause elapsed time`() {
+        val spec = TimerSpec(
+            durationMillis = 60_000L,
+            startedAtElapsedRealtime = 900_000L,
+            startedAtWallClockMillis = 1_000_000L,
+        ).pause(920_000L, 1_020_000L)
+            .resume(30_000L, 1_120_000L)
+
+        assertEquals(30_000L, spec.remainingMillis(40_000L, 1_130_000L))
+    }
+
     @Test
     fun `isExpired is true exactly at and after the deadline`() {
         val spec = TimerSpec(durationMillis = 10_000L, startedAtElapsedRealtime = 0L)

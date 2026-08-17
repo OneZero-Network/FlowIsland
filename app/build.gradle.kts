@@ -8,17 +8,13 @@ plugins {
 
 android {
     namespace = "com.flowisland.android"
-    // NOTE ON SDK LEVELS:
-    // compileSdk/targetSdk 36 (Android 16) so Live Update / Notification.ProgressStyle
-    // APIs are available and the app satisfies Google Play's Aug 31 2026 target-API
-    // requirement. minSdk is intentionally 28 (Android 9), not 35, so the app installs
-    // on the ~half of active devices still below Android 15 -- those devices simply
-    // fall back to standard ongoing notifications instead of Live Updates / island.
+    // Android 15 is the supported floor. Android 16 / API 36 is the target because
+    // Google Play requires new apps and updates to target API 36 from Aug 31 2026.
     compileSdk = 36
 
     defaultConfig {
         applicationId = "com.flowisland.android"
-        minSdk = 28
+        minSdk = 35
         targetSdk = 36
         versionCode = 1
         versionName = "1.0.0"
@@ -58,11 +54,12 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            // A Play Store release must never silently fall back to debug signing.
+            // The GitHub workflow only invokes this variant when the private signing
+            // secrets are present. Local developers can still use the debug variant.
             val releaseSigning = signingConfigs.getByName("release")
-            signingConfig = if (releaseSigning.storeFile != null) {
-                releaseSigning
-            } else {
-                signingConfigs.getByName("debug")
+            if (releaseSigning.storeFile != null) {
+                signingConfig = releaseSigning
             }
         }
     }
@@ -104,6 +101,7 @@ ksp {
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.process)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.service)

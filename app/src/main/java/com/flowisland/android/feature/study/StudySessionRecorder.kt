@@ -4,6 +4,7 @@ import com.flowisland.android.core.activity.ActivityEngine
 import com.flowisland.android.core.activity.model.ActivityId
 import com.flowisland.android.core.activity.model.ActivityState
 import com.flowisland.android.core.activity.model.ActivityType
+import com.flowisland.android.core.activity.model.ActivityUiState
 import com.flowisland.android.core.database.StudySessionDao
 import com.flowisland.android.core.database.StudySessionEntity
 import com.flowisland.android.core.di.ApplicationScope
@@ -28,25 +29,28 @@ class StudySessionRecorder @Inject constructor(
         scope.launch {
             activityEngine.activities.collect { list ->
                 list.filter { it.type == ActivityType.STUDY && it.state.isTerminal }
-                    .forEach { record(it.id.value, completed = it.state == ActivityState.COMPLETED) }
+                    .forEach { record(it, completed = it.state == ActivityState.COMPLETED) }
             }
         }
     }
 
-    private fun record(activityId: String, completed: Boolean) {
+    private fun record(state: ActivityUiState, completed: Boolean) {
+        val activityId = state.id.value
         if (activityId in recorded) return
         recorded += activityId
-        val (subject, startedAt, plannedDuration) = StudySessionRegistry.consume(activityId) ?: return
+        val startedAt = state.createdAt
+        val plannedDuration = state.timer?.durationMillis ?: 0L
+        val endedAt = System.currentTimeMillis()
         scope.launch {
             withContext(ioDispatcher) {
                 studySessionDao.insert(
                     StudySessionEntity(
                         id = activityId,
-                        subject = subject,
+                        subject = state.title,
                         plannedDurationMillis = plannedDuration,
-                        actualDurationMillis = System.currentTimeMillis() - startedAt,
+                        actualDurationMillis = (endedAt - startedAt).coerceAtLeast(0L),
                         startedAt = startedAt,
-                        endedAt = System.currentTimeMillis(),
+                        endedAt = endedAt,
                         completed = completed,
                     )
                 )

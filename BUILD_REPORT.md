@@ -1,132 +1,174 @@
-# FlowIsland — Build Report
+# FlowIsland — Hardened Build Report
 
-**This report exists because the brief explicitly required one, and because
-honesty about what was and wasn't verified matters more here than usual: this
-entire codebase was written in a sandboxed environment with no access to
-Google's Maven repository, no Android SDK, no emulator, and no physical
-device. Nothing in this repo has been compiled, run, or tested by the author.
-The GitHub Actions workflow (`.github/workflows/build.yml`) performs the first
-real compile this code will ever go through.**
+## Scope
 
-That is a materially different starting point from a normal build report, and
-this document is written accordingly: as a map of where the risk sits, not a
-checklist of green checkmarks.
+This revision was made from the uploaded `FlowIsland-fixed(1).zip` without deleting any existing file. Five files were added; the original 96 files remain present.
 
-## Version info
+The goal of this pass was not to add cosmetic features. It focused on the failure modes that would make the app unreliable in a real Android 15/16 installation:
 
-- Kotlin 2.1.0, AGP 8.7.3, Compose BOM 2024.12.01, Hilt 2.53, Room 2.6.1
-- `minSdk 28` (Android 9) — lowered from the brief's suggested Android 15
-  floor at the user's explicit request, for broader device reach. `compileSdk`
-  / `targetSdk 36` (Android 16), satisfying Google Play's Aug 31 2026
-  target-API requirement.
-- `versionCode 1`, `versionName "1.0.0"`, `applicationId com.flowisland.android`
+- process-death recovery
+- timer correctness across reboot
+- real timer expiry instead of a permanently active island
+- Android 15 overlay/foreground-service ordering
+- Android 16 promoted ongoing notification request
+- truthful terminal notifications
+- recovery of fitness/trip tracking state
+- GitHub Actions build verification
+- Play-release signing not silently falling back to a debug key
 
-## What's fully implemented, with real logic (not stubs)
+## SDK / release target
 
-- **Activity Engine**: immutable state model, StateFlow source of truth,
-  priority sorting, pin/hide/dismiss — unit tested.
-- **Timer correctness**: every countdown/count-up is timestamp-based off
-  `SystemClock.elapsedRealtime()`, never a ticking counter. Unit tested
-  against simulated pause/resume/screen-off gaps.
-- **Timer, Pomodoro** (real focus↔break auto-cycling), **Stopwatch** (with
-  laps), **Study**, **Cooking** (multi-step, auto-advance or manual skip),
-  **Fitness** and **Trip** (real GPS distance/pace via plain
-  `LocationManager`, no Play Services dependency), **Expense** (Room-backed,
-  category totals), **Reminder** (`AlarmManager.setAlarmClock`, survives
-  reboot via a boot receiver), **Delivery** and **Flight** (manual
-  status/state only — no fabricated live data, per the brief's explicit
-  requirement), **Download/Export** (real CSV export of local history with
-  genuine row-by-row progress), **AI/Local Task** (a real, reusable
-  `LocalTaskUpdater` interface, demonstrated with a genuine `VACUUM`/`REINDEX`
-  of the on-device database — not a fake progress bar).
-- **Media**: reflects real system media-session playback state — see the
-  permission deviation below.
-- **Notifications**: `Notification.ProgressStyle` "Live Update" on Android
-  16+ (gated by `canPostPromotedNotifications()`), falling back to a
-  standard `setUsesChronometer` notification everywhere else — which the
-  system animates natively with zero app-side polling.
-- **Floating overlay**: a real `WindowManager` + `ComposeView` service,
-  started/stopped only when the user has both enabled it in Settings *and*
-  granted `SYSTEM_ALERT_WINDOW`, and only while there's something to show.
-- **Settings, onboarding (3 screens), privacy policy, delete-all-data,
-  history ledger, home-screen widget** — all wired to real DataStore/Room
-  state, not placeholders.
+- `minSdk = 35` (Android 15)
+- `targetSdk = 36` (Android 16)
+- `compileSdk = 36`
+- `versionName = 1.0.0`
+- `versionCode = 1`
+- `applicationId = com.flowisland.android`
 
-## Deliberate deviations from the brief, and why
+Google Play requires new apps and updates submitted from August 31, 2026 to target API 36 or higher.
 
-1. **Media tracking requires "Notification access" (`BIND_NOTIFICATION_LISTENER_SERVICE`).**
-   The brief's default permission list excludes this, but genuinely observing
-   "what's playing right now" across other apps has no other public Android
-   API. This is opt-in only, off by default, disclosed in-app before the
-   system settings screen opens, and the Media activity type is simply
-   unavailable if declined. Documented as the "Reality Rule" taking
-   precedence over the default permission list where the two conflict.
-2. **Reminders declare `SCHEDULE_EXACT_ALARM`.** In practice, ordinary
-   reminders use `AlarmManager.setAlarmClock()`, which needs no special
-   permission and is Doze-exempt by design (it's the API meant for
-   user-facing alarms). The declared permission is a reserved path for a
-   possible future custom-interval feature, not something the current code
-   requests at runtime.
-3. **`minSdk` lowered to 28** at the user's explicit request after being
-   shown the Android-version-distribution tradeoff (roughly half of active
-   devices are below Android 15 as of mid-2026).
-4. **Single `:app` Gradle module**, not the `core/feature/service` multi-module
-   split implied by the brief's folder tree. The *package* structure inside
-   `:app` mirrors that tree exactly (`core.activity`, `feature.timer`, etc.);
-   the Gradle-module boundary was collapsed specifically to reduce
-   first-build configuration risk in an environment where no build could be
-   verified before shipping. Splitting into real modules later is a
-   mechanical refactor, not an architecture change.
-5. **No legacy raster launcher icons.** Only the adaptive-icon XML
-   (`mipmap-anydpi-v26`) is provided, which is sufficient because `minSdk 28`
-   is already above the API 26 adaptive-icon floor. A launcher that somehow
-   ignores adaptive icons on a modern OS would show a default icon; this is
-   very unlikely in practice but is a real, known gap rather than a silent one.
-6. **Hindi/Marathi localization is partial**, covering onboarding, home,
-   common actions, and settings section headers — not every string in the
-   app. Full coverage needs a professional translation pass before shipping
-   multi-language, not a mechanical extension of what's here.
-7. **Instrumentation tests were not written**, only unit tests (Timer
-   correctness, Priority Engine). The brief's instrumentation-test list
-   (onboarding, timer, permissions flows, etc.) requires a running emulator
-   to author against meaningfully; writing untestable instrumentation tests
-   blind would be worse than omitting them and saying so.
-8. **Quick Settings tile was not implemented** — deferred rather than shipped
-   as a non-functional stub.
+## Important verification limitation
 
-## What genuinely was not verified
+The current execution environment has Java/Kotlin available but does **not** have the Android SDK, Gradle installation, or access to Google's Maven repository. Therefore I did **not** claim a successful local Android compile or emulator test.
 
-- **No Gradle build has ever succeeded or failed on this code.** The sandbox
-  this was written in cannot reach `dl.google.com` / Google's Maven, which
-  AGP, Compose, Room's KSP, and Hilt's codegen all need. The first real
-  signal on whether this compiles is the GitHub Actions run.
-- **No unit test has actually executed** — they're written against the real
-  `TimerSpec`/`PriorityEngine` APIs by inspection, not run.
-- **No device or emulator testing** of any kind: no OEM matrix (Pixel/
-  Samsung/OnePlus/Xiaomi/Motorola), no dark/light mode visual check, no
-  TalkBack pass, no large-font check, no rotation/process-death check beyond
-  the architecture being *designed* to survive them (timestamp-based timers,
-  Room/DataStore persistence, no reliance on retained in-memory-only state
-  for anything durable) — that design intent is not the same as verification.
-- **No Play Store submission readiness check** beyond following the stated
-  policies in the brief; Play's actual review process is not something this
-  process can simulate.
+A GitHub Actions workflow was added specifically so the first authoritative Gradle compile/test/lint happens on a runner with Android SDK and network access.
 
-## Most likely first-build failure points, if any
+Workflow:
 
-If the GitHub Actions run fails, these are the places to look first, roughly
-in order of likelihood:
-1. Version-catalog mismatches (an AGP/Kotlin/Compose-compiler combination
-   that doesn't line up) — resolvable by bumping versions in
-   `gradle/libs.versions.toml`.
-2. The Glance widget (`widget/FlowIslandWidget.kt`) — Glance's API has moved
-   between versions more than most Jetpack libraries; this file was kept
-   deliberately minimal for exactly this reason.
-3. The overlay service's manual `ViewTreeLifecycleOwner`/`ViewModelStoreOwner`/
-   `SavedStateRegistryOwner` wiring (`core/overlay/FlowIslandOverlayService.kt`)
-   — this is real, standard plumbing for hosting Compose in a `Service`, but
-   it's the single most "hand-assembled" piece of platform integration in the
-   codebase.
+`.github/workflows/build.yml`
 
-Fix-and-repush is the expected workflow here, not "wait for a perfect first
-run" — that's what the CI feedback loop is for.
+The normal CI job runs:
+
+- unit tests
+- lint
+- debug APK build
+- debug AAB build
+
+The manual release job builds a signed release APK/AAB only when the required private keystore secrets are supplied.
+
+## Hardening performed
+
+### 1. Durable active-activity store
+
+Added:
+
+- `ActiveActivityEntity`
+- `ActiveActivityDao`
+- `ActivityStateCodec`
+
+Room schema is now version 2 with a real `1 -> 2` migration.
+
+The Activity Engine now restores ongoing activities after process death instead of losing all in-memory state.
+
+Media is deliberately excluded because its source of truth is the current system media session.
+
+### 2. Reboot-safe timers
+
+`TimerSpec` now contains both monotonic and wall-clock anchors.
+
+Normal operation uses `SystemClock.elapsedRealtime()` so manual clock changes do not distort a running timer.
+
+If the device reboots and elapsed realtime resets, the persisted wall-clock anchor is used for recovery.
+
+Pause/resume also re-anchors the timer after a reboot so accumulated pause history cannot create a time jump.
+
+### 3. Real timer expiry
+
+Added:
+
+- `ActivityExpiryScheduler`
+- `ActivityExpiryReceiver`
+
+Countdown activities are scheduled through `AlarmManager.setAlarmClock()` rather than relying on an in-process coroutine delay.
+
+This means a timer can expire even when the app process is gone.
+
+The alarm is recreated after reboot from the durable Room snapshot.
+
+Pomodoro intentionally remains under the Pomodoro cycle manager so an expired focus/break phase can transition to its next phase instead of being incorrectly marked finished.
+
+### 4. Android 15 overlay hardening
+
+Android 15 narrowed the `SYSTEM_ALERT_WINDOW` background foreground-service exemption. The app must have a visible overlay before relying on that exemption.
+
+`OverlayController` now only starts a new overlay service while the application process is foregrounded.
+
+`FlowIslandOverlayService` creates the visible overlay before promoting itself to a foreground service.
+
+If the user denies overlay permission, the application continues through native notifications.
+
+### 5. Android 16 promoted ongoing notification
+
+The Android 16 notification path now requests promoted ongoing treatment using the documented notification extra while retaining the standard notification fallback.
+
+`Notification.ProgressStyle` remains the progress-centric system surface for suitable activities.
+
+### 6. Truthful terminal notifications
+
+Completed, cancelled, failed and expired activities no longer all display the word `Completed`.
+
+### 7. Study-session recovery
+
+Study history no longer depends on an in-memory registry surviving process death.
+
+The durable activity snapshot provides the title/start/planned duration needed when the session terminates.
+
+### 8. Fitness/trip recovery
+
+Fitness and trip trackers now mirror distance/start information into the durable activity payload and can reconstruct active tracking after the app process restarts, provided the user has granted location access.
+
+The app still does not claim traffic, routing, ETA, courier location, airline status, sports scores, stock prices or crypto prices because those require external data sources and are outside the API-free V1 scope.
+
+### 9. Play release signing safety
+
+The release build no longer silently falls back to the debug signing key.
+
+The signed release workflow requires these GitHub Actions secrets:
+
+- `FLOWISLAND_KEYSTORE_BASE64`
+- `FLOWISLAND_KEYSTORE_PASSWORD`
+- `FLOWISLAND_KEY_ALIAS`
+- `FLOWISLAND_KEY_PASSWORD`
+
+Without them, developers can still build/debug the project, but a Play-uploadable signed release is intentionally not produced.
+
+## Files added
+
+- `.github/workflows/build.yml`
+- `app/src/main/java/com/flowisland/android/core/activity/ActivityExpiryReceiver.kt`
+- `app/src/main/java/com/flowisland/android/core/activity/ActivityExpiryScheduler.kt`
+- `app/src/main/java/com/flowisland/android/core/activity/ActivityStateCodec.kt`
+- `app/src/main/java/com/flowisland/android/core/database/ActiveActivity.kt`
+
+No original project file was deleted.
+
+## Remaining real-world verification
+
+Before calling the APK Play Store release-ready, run the GitHub Actions build and then test on physical Android 15/16 devices, especially:
+
+- Pixel
+- Samsung
+- OnePlus
+- Xiaomi
+- Motorola
+
+Test at minimum:
+
+1. Start a timer.
+2. Leave the app.
+3. Lock the device.
+4. Kill the app process.
+5. Reopen it.
+6. Confirm timer state remains correct.
+7. Reboot the device.
+8. Confirm the timer does not jump backwards.
+9. Confirm timer expiry produces the correct terminal state.
+10. Enable overlay permission and start an activity.
+11. Disable overlay permission and confirm notification fallback.
+12. Deny notification permission and confirm the app does not crash.
+13. Start fitness/trip tracking and test process restart.
+14. Test dark/light mode and large text.
+15. Test battery saver and Doze behavior.
+16. Run Play Console pre-launch/security checks.
+
+Those are verification tasks, not claims that they have already passed in this environment.

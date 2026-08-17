@@ -85,7 +85,11 @@ class NotificationBridge @Inject constructor(@ApplicationContext private val con
 
     private fun compatActionsFor(state: ActivityUiState): List<NotificationCompat.Action> =
         state.actions.take(3).map { action ->
-            NotificationCompat.Action.Builder(0, context.getString(action.labelResId), actionPendingIntent(state, action)).build()
+            NotificationCompat.Action.Builder(
+                R.drawable.ic_notification_flowisland,
+                context.getString(action.labelResId),
+                actionPendingIntent(state, action),
+            ).build()
         }
 
     private fun buildStandardNotification(state: ActivityUiState): Notification {
@@ -137,15 +141,12 @@ class NotificationBridge @Inject constructor(@ApplicationContext private val con
             .setOnlyAlertOnce(true)
             .setContentIntent(contentIntent(state))
             .setStyle(progressStyle)
-        // NOTE: this branch is only reached when canPostPromotedNotifications()
-        // (checked in canUseLiveUpdate() above) already returned true, which is
-        // the actual system gate for Live Update / promoted-notification
-        // treatment. There may additionally be a builder-level opt-in call on
-        // API 36 (something like setRequestPromotedOngoing); it was left out
-        // here rather than guessed at, since its exact name/signature couldn't
-        // be verified against this SDK in the environment this was written in.
-        // If Live Updates don't visually promote once this is confirmed to
-        // build, that's the next thing to check.
+            // Android 16.1 exposes this through Notification.Builder. Writing the
+            // documented extra keeps the source compatible with API 36 SDKs while
+            // still requesting promoted ongoing treatment on devices that support it.
+            .setExtras(android.os.Bundle().apply {
+                putBoolean("android.requestPromotedOngoing", true)
+            })
 
         state.timer?.takeIf { !it.isPaused }?.let { timer ->
             builder.setUsesChronometer(true)
@@ -170,7 +171,13 @@ class NotificationBridge @Inject constructor(@ApplicationContext private val con
         val builder = NotificationCompat.Builder(context, channelFor(state.type))
             .setSmallIcon(R.drawable.ic_notification_flowisland)
             .setContentTitle(state.title)
-            .setContentText(context.getString(R.string.completion_label))
+            .setContentText(when (state.state) {
+                ActivityState.COMPLETED -> context.getString(R.string.completion_label)
+                ActivityState.CANCELLED -> context.getString(R.string.cancelled_label)
+                ActivityState.FAILED -> context.getString(R.string.failed_label)
+                ActivityState.EXPIRED -> context.getString(R.string.expired_label)
+                else -> context.getString(R.string.completion_label)
+            })
             .setOngoing(false)
             .setAutoCancel(true)
             .setContentIntent(contentIntent(state))

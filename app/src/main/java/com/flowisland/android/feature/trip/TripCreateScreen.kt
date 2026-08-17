@@ -2,6 +2,7 @@ package com.flowisland.android.feature.trip
 
 import android.Manifest
 import android.content.Intent
+import android.util.Base64
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -61,7 +62,7 @@ class TripCreateViewModel @Inject constructor(
             actions = listOf(
                 ActivityAction("navigate", R.string.trip_open_navigation, ActivityAction.Kind.OPEN_NAVIGATION),
             ) + ActivityActions.simpleFinishCancel(),
-            payloadId = destination.ifBlank { null },
+            payloadId = "trip|${Base64.encodeToString(destination.ifBlank { "Trip" }.toByteArray(), Base64.NO_WRAP)}|0.0|${System.currentTimeMillis()}",
         )
         activityEngine.upsert(state)
         tracker.start(id.value)

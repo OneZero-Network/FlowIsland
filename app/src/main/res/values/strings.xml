@@ -58,6 +58,10 @@
     <string name="action_view_result">View result</string>
     <string name="action_view_details">View details</string>
     <string name="completion_label">Completed</string>
+    <string name="cancelled_label">Cancelled</string>
+    <string name="failed_label">Failed</string>
+    <string name="expired_label">Expired</string>
+    <string name="interrupted_after_restart">Interrupted after the app restarted</string>
 
     <!-- Timer -->
     <string name="timer_new">New timer</string>

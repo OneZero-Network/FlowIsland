@@ -63,7 +63,7 @@ class FitnessCreateViewModel @Inject constructor(
             state = ActivityState.ACTIVE,
             timer = TimerSpec(durationMillis = 0L, countUp = true),
             actions = ActivityActions.simpleFinishCancel(),
-            payloadId = kind.name,
+            payloadId = "fitness|${kind.name}|0.0|${System.currentTimeMillis()}",
         )
         activityEngine.upsert(state)
         tracker.start(id.value, kind.name, label)

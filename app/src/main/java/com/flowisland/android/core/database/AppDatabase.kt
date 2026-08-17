@@ -4,17 +4,15 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 
 /**
- * Migration policy: this is schema version 1 (initial release), so there is
- * nothing to migrate from yet. Every future schema change MUST ship as an
- * explicit Migration(oldVersion, newVersion) added to the `.addMigrations(...)`
- * call in DatabaseModule -- fallbackToDestructiveMigration() is intentionally
- * never used in the release build, per the "do not destroy user data during
- * upgrades" requirement. It is used only for local debug iteration, gated by
- * BuildConfig-less `if (isDebuggable)` check in DatabaseModule.
+ * Schema version 2 adds the durable active-activity snapshot used to recover
+ * ongoing timers and activities after process death/reboot. Every future schema
+ * change MUST ship as an explicit Migration(oldVersion, newVersion) added to
+ * DatabaseModule. Destructive migration is intentionally never used.
  */
 @Database(
     entities = [
         ActivityHistoryEntity::class,
+        ActiveActivityEntity::class,
         StudySessionEntity::class,
         CookingRecipeEntity::class,
         CookingStepEntity::class,
@@ -26,11 +24,12 @@ import androidx.room.RoomDatabase
         DeliveryEntity::class,
         FlightEntity::class,
     ],
-    version = 1,
+    version = 2,
     exportSchema = true,
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun activityHistoryDao(): ActivityHistoryDao
+    abstract fun activeActivityDao(): ActiveActivityDao
     abstract fun studySessionDao(): StudySessionDao
     abstract fun cookingDao(): CookingDao
     abstract fun fitnessSessionDao(): FitnessSessionDao

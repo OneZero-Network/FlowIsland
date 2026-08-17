@@ -78,14 +78,21 @@ class FlowIslandOverlayService : Service(), LifecycleOwner, ViewModelStoreOwner,
         savedStateRegistryController.performRestore(null)
         super.onCreate()
 
-        startForeground(NOTIFICATION_ID, buildForegroundNotification())
+        // Add the visible TYPE_APPLICATION_OVERLAY window before promoting the
+        // service. Android 15 requires a visible overlay for the SYSTEM_ALERT_WINDOW
+        // background-start exemption; OverlayController also only starts this service
+        // while the app is foregrounded.
         addOverlayView()
+        startForeground(NOTIFICATION_ID, buildForegroundNotification())
+        isRunning = true
 
         combine(activityEngine.activities, settingsRepository.settings) { activities, settings ->
             val visible = if (settings.islandDisplayMode == IslandDisplayMode.PINNED_ONLY) activities.filter { it.pinned } else activities
             visible.take(PriorityEngine.MAX_VISIBLE_COLLAPSED)
-        }.onEach { visible ->
-            if (visible.isEmpty()) stopSelf()
+        }.onEach { _ ->
+            // OverlayController owns the stop decision. Keeping the service alive
+            // for this short coordination window prevents a stale controller state
+            // from blocking a later restart.
         }.launchIn(lifecycleScope)
     }
 
@@ -178,12 +185,17 @@ class FlowIslandOverlayService : Service(), LifecycleOwner, ViewModelStoreOwner,
     }
 
     override fun onDestroy() {
+        isRunning = false
         composeView?.let { runCatching { windowManager?.removeView(it) } }
         dispatcher.onServicePreSuperOnDestroy()
         super.onDestroy()
     }
 
     companion object {
+        @Volatile
+        var isRunning: Boolean = false
+            private set
+
         private const val NOTIFICATION_ID = 9000
     }
 }
